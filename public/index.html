@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StepFun 知识库管理后台</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/realtime.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="https://platform.stepfun.com/docs/zh/welcome" target="_blank" class="logo" title="StepFun 文档中心">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          <span>StepFun控制管理后台</span>
+        </a>
+        <nav class="nav-tabs">
+          <a href="/" class="nav-tab active">知识库管理</a>
+          <a href="/realtime.html" class="nav-tab">实时语音对话</a>
+          <a href="/step-realtime.html" class="nav-tab">中转测试</a>
+          <a href="/vision.html" class="nav-tab">图片理解</a>
+          <a href="/image.html" class="nav-tab">图片生成</a>
+          <a href="/image-edit.html" class="nav-tab">图片编辑</a>
+          <a href="/video.html" class="nav-tab">视频理解</a>
+          <a href="/tts.html" class="nav-tab">音频合成</a>
+          <a href="/voice-clone.html" class="nav-tab">音色复刻</a>
+        </nav>
+      </div>
+      <div class="header-right">
+        <span class="api-badge" id="apiStatus">检查中...</span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- List View -->
+      <div id="listView" class="view active">
+        <div class="page-header">
+          <div>
+            <h1>知识库列表</h1>
+            <p class="page-subtitle">管理所有知识库，查看文件统计信息</p>
+          </div>
+          <button class="btn btn-primary" onclick="showCreateModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            创建知识库
+          </button>
+        </div>
+
+        <div id="kbGrid" class="kb-grid">
+          <!-- Cards will be rendered here -->
+        </div>
+
+        <div id="listPagination" class="pagination" style="display:none;">
+          <button class="btn btn-ghost" id="prevPageBtn" onclick="loadPrevPage()">上一页</button>
+          <span id="pageInfo" class="page-info"></span>
+          <button class="btn btn-ghost" id="nextPageBtn" onclick="loadNextPage()">下一页</button>
+        </div>
+      </div>
+
+      <!-- Detail View -->
+      <div id="detailView" class="view">
+        <div class="page-header">
+          <div>
+            <button class="btn btn-ghost btn-back" onclick="showListView()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12 19 5 12 12 5"/>
+              </svg>
+              返回列表
+            </button>
+            <h1 id="detailTitle">知识库详情</h1>
+            <p class="page-subtitle" id="detailSubtitle"></p>
+          </div>
+          <div class="detail-actions">
+            <button class="btn btn-primary" onclick="showRAGModal()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              RAG 检索测试
+            </button>
+            <button class="btn btn-ghost" onclick="showUploadModal()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              上传文件
+            </button>
+            <button class="btn btn-danger" onclick="confirmDeleteKB()">删除知识库</button>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row" id="statsRow">
+          <!-- Stats will be rendered here -->
+        </div>
+
+        <!-- File List -->
+        <div class="file-section">
+          <h2>文件列表</h2>
+          <div id="fileList" class="file-list">
+            <!-- Files will be rendered here -->
+          </div>
+          <div id="filePagination" class="pagination" style="display:none;">
+            <button class="btn btn-ghost" id="filePrevBtn" onclick="loadFilePrevPage()">上一页</button>
+            <span id="filePageInfo" class="page-info"></span>
+            <button class="btn btn-ghost" id="fileNextBtn" onclick="loadFileNextPage()">下一页</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create KB Modal -->
+  <div id="createModal" class="modal-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>创建知识库</h2>
+        <button class="modal-close" onclick="closeCreateModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>知识库名称 <span class="required">*</span></label>
+          <input type="text" id="kbName" placeholder="仅支持英文、数字和下划线，不能以下划线开头" class="form-input">
+          <p class="form-hint">用于区分多个不同的知识库，如：product_docs、faq_kb</p>
+        </div>
+        <div class="form-group">
+          <label>知识库类型</label>
+          <select id="kbType" class="form-input">
+            <option value="text">文本知识库（text）</option>
+            <option value="image">图片知识库（image）</option>
+          </select>
+          <p class="form-hint">文本知识库用于存储文档，图片知识库用于存储图片</p>
+        </div>
+        <div class="form-group">
+          <label>初始文件（可选）</label>
+          <div class="upload-zone upload-zone-sm" id="createUploadZone">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <p class="upload-text">点击选择 xlsx 文件（创建后自动导入）</p>
+            <p class="upload-hint">支持 txt, md, pdf, doc, docx, xls, xlsx, ppt, pptx, csv, html, htm, xml（最大 64MB）</p>
+            <input type="file" id="createFileInput" style="display:none;">
+          </div>
+          <div id="createFilePreview" class="file-preview" style="display:none;">
+            <div class="file-preview-info">
+              <span id="createPreviewIcon" class="file-item-icon"></span>
+              <div>
+                <p id="createPreviewName" class="file-preview-name"></p>
+                <p id="createPreviewSize" class="file-preview-size"></p>
+              </div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="clearCreateFile()">移除</button>
+          </div>
+          <div id="createDescGroup" class="form-group" style="display:none;">
+            <label>文件描述 <span class="required">*</span></label>
+            <input type="text" id="createFileDesc" placeholder="例如：元响影院影视内容" class="form-input" maxlength="255">
+            <p class="form-hint">默认使用文件名（不含扩展名），最长 255 字符</p>
+          </div>
+        </div>
+        <div id="createError" class="form-error" style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeCreateModal()">取消</button>
+        <button class="btn btn-primary" id="createBtn" onclick="createKB()">创建</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload File Modal -->
+  <div id="uploadModal" class="modal-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>上传文件到知识库</h2>
+        <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="upload-zone" id="uploadZone">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p class="upload-text">点击或拖拽文件到此处上传</p>
+          <p class="upload-hint" id="uploadHint">支持 txt, md, pdf, doc, docx, xls, xlsx, ppt, pptx, csv, html, htm, xml（最大 64MB）</p>
+          <input type="file" id="fileInput" style="display:none;">
+        </div>
+        <div id="filePreview" class="file-preview" style="display:none;">
+          <div class="file-preview-info">
+            <span id="previewIcon" class="file-icon"></span>
+            <div>
+              <p id="previewName" class="file-preview-name"></p>
+              <p id="previewSize" class="file-preview-size"></p>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="clearFile()">移除</button>
+        </div>
+        <div class="form-group" id="descGroup">
+          <label>文件描述（可选）</label>
+          <input type="text" id="fileDesc" placeholder="文件的描述信息" class="form-input">
+          <p class="form-hint">图片知识库上传时描述为必填项</p>
+        </div>
+        <div id="uploadProgress" class="upload-progress" style="display:none;">
+          <div class="progress-spinner"></div>
+          <div class="progress-text" id="progressText">处理中...</div>
+          <div class="progress-hint" id="progressHint"></div>
+        </div>
+        <div id="uploadError" class="form-error" style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeUploadModal()">取消</button>
+        <button class="btn btn-primary" id="uploadBtn" onclick="uploadFile()" disabled>上传并添加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div id="deleteModal" class="modal-overlay" style="display:none;">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h2 id="deleteTitle">确认删除</h2>
+        <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="deleteMessage" class="delete-message"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeDeleteModal()">取消</button>
+        <button class="btn btn-danger" id="deleteConfirmBtn">确认删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Content Viewer Modal -->
+  <div id="fileContentModal" class="modal-overlay" style="display:none;">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2 id="fileContentTitle">文件内容</h2>
+        <button class="modal-close" onclick="closeFileContentModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="fileContentBody" style="padding:0;">
+        <!-- 内容由 JS 填充 -->
+      </div>
+      <div class="modal-footer" id="fileContentFooter" style="display:none;">
+        <span class="content-meta" id="fileContentSize"></span>
+        <div style="flex:1;"></div>
+        <button class="btn btn-ghost" onclick="copyFileContent()">复制</button>
+        <button class="btn btn-ghost" onclick="downloadFileContent()">下载</button>
+        <button class="btn btn-primary" onclick="closeFileContentModal()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RAG Chat Modal -->
+  <div id="ragModal" class="modal-overlay" style="display:none;">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <div>
+          <h2>RAG 检索测试</h2>
+          <p id="ragSubtitle" class="page-subtitle" style="font-size:13px;margin-top:2px;"></p>
+        </div>
+        <button class="modal-close" onclick="closeRAGModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:0;">
+        <!-- Settings -->
+        <div class="rag-settings" id="ragSettings">
+          <div class="rag-settings-row">
+            <div class="rag-settings-group">
+              <label>模型</label>
+              <select id="ragModel" class="form-input form-input-sm">
+                <option value="step-3.7-flash">step-3.7-flash（推荐，主力模型）</option>
+                <option value="step-3.5-flash">step-3.5-flash</option>
+                <option value="step-3.5-flash-2603">step-3.5-flash-2603（支持推理强度）</option>
+                <option value="stepaudio-2.5-chat">stepaudio-2.5-chat（仅文本）</option>
+                <option value="step-router-v1">step-router-v1（智能路由，需 Step Plan）</option>
+              </select>
+            </div>
+            <div class="rag-settings-group">
+              <label>知识库描述</label>
+              <input type="text" id="ragKBDesc" class="form-input form-input-sm" placeholder="描述知识库内容，提高检索命中率">
+            </div>
+          </div>
+          <div class="rag-settings-row">
+            <div class="rag-settings-group" style="flex:2;">
+              <label>系统提示词</label>
+              <input type="text" id="ragSystemPrompt" class="form-input form-input-sm" placeholder="系统提示词">
+            </div>
+            <div class="rag-settings-group" style="flex:0 0 80px;">
+              <label>温度</label>
+              <input type="number" id="ragTemperature" class="form-input form-input-sm" value="0.5" min="0" max="2" step="0.1">
+            </div>
+          </div>
+        </div>
+        <!-- Chat Messages -->
+        <div id="ragChat" class="rag-chat">
+          <div class="rag-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3;margin-bottom:12px;">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <p>输入问题，对知识库进行 RAG 检索测试</p>
+          </div>
+        </div>
+        <!-- Input -->
+        <div class="rag-input-area">
+          <textarea id="ragInput" class="rag-input" placeholder="输入你的问题..." rows="1" oninput="autoResize(this)"></textarea>
+          <button class="btn btn-primary" id="ragSendBtn" onclick="sendRAGQuery()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            发送
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" style="display:none;"></div>
+
+  <!-- Loading -->
+  <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+    <p id="loadingText">加载中...</p>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

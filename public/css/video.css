@@ -1,0 +1,94 @@
+/* ===== 视频理解页面 ===== */
+
+/* 视频输入区 */
+.vd-upload-zone {
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius);
+  padding: 20px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--gray-50);
+}
+
+.vd-upload-zone:hover,
+.vd-upload-zone.dragover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.vd-upload-zone .upload-text {
+  font-size: 13px;
+  color: var(--gray-700);
+  margin-top: 4px;
+}
+
+.vd-upload-zone .upload-hint {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+
+/* 视频预览 */
+.vd-preview {
+  margin-top: 10px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+}
+
+.vd-preview video {
+  width: 100%;
+  max-height: 180px;
+  border-radius: var(--radius-sm);
+  background: #000;
+}
+
+.vd-preview-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 6px;
+  padding: 0 2px;
+}
+
+.vd-preview-info .vd-name {
+  color: var(--gray-700);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  margin-right: 8px;
+}
+
+.vd-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.vd-input {
+  flex: 1;
+  resize: none;
+  min-height: 40px;
+  max-height: 120px;
+  line-height: 1.5;
+}
+
+/* 对话气泡中的视频 */
+.rt-msg .vd-msg-video {
+  max-width: 240px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  background: #000;
+  display: block;
+}
+
+/* 拖拽高亮 */
+.rt-conversation.dragover {
+  outline: 2px dashed var(--primary);
+  outline-offset: -4px;
+}

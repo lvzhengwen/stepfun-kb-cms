@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片生成 - StepFun 控制管理后台</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/realtime.css">
+  <link rel="stylesheet" href="/css/image.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="https://platform.stepfun.com/docs/zh/welcome" target="_blank" class="logo" title="StepFun 文档中心">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          <span>StepFun控制管理后台</span>
+        </</a>
+        <nav class="nav-tabs">
+          <a href="/" class="nav-tab">知识库管理</a>
+          <a href="/realtime.html" class="nav-tab">实时语音对话</a>
+          <a href="/step-realtime.html" class="nav-tab">中转测试</a>
+          <a href="/vision.html" class="nav-tab">图片理解</a>
+          <a href="/image.html" class="nav-tab active">图片生成</a>
+          <a href="/image-edit.html" class="nav-tab">图片编辑</a>
+          <a href="/video.html" class="nav-tab">视频理解</a>
+          <a href="/tts.html" class="nav-tab">音频合成</a>
+          <a href="/voice-clone.html" class="nav-tab">音色复刻</a>
+        </nav>
+      </div>
+      <div class="header-right">
+        <span class="api-badge" id="apiStatus">检查中...</span>
+      </div>
+    </header>
+
+    <main class="ig-main">
+      <!-- 左侧配置 -->
+      <aside class="ig-sidebar">
+        <div class="rt-panel">
+          <h3 class="rt-panel-title">模型与参数</h3>
+          <div class="form-group">
+            <label>模型</label>
+            <select id="cfgModel" class="form-input form-input-sm" onchange="onModelChange()">
+              <option value="step-image-edit-2">step-image-edit-2（推荐，文生图）</option>
+              <option value="step-2x-large">step-2x-large（多尺寸）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>分辨率 size</label>
+            <select id="cfgSize" class="form-input form-input-sm"></select>
+          </div>
+          <div class="form-group">
+            <label>生成张数 n</label>
+            <select id="cfgN" class="form-input form-input-sm">
+              <option value="1">1 张</option>
+              <option value="2">2 张</option>
+              <option value="3">3 张</option>
+              <option value="4">4 张</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>推理步数 steps（1~50，默认 8）</label>
+            <input type="number" id="cfgSteps" class="form-input form-input-sm" value="8" min="1" max="50">
+            <p class="form-hint">越大效果越好但越慢</p>
+          </div>
+          <div class="form-group">
+            <label>CFG scale（1.0~10.0，默认 1.0）</label>
+            <input type="number" id="cfgCfgScale" class="form-input form-input-sm" value="1.0" min="1" step="0.1">
+            <p class="form-hint">=1.0 时负面提示词不生效</p>
+          </div>
+          <div class="form-group">
+            <label class="rt-switch-row">
+              <span>文字场景优化 text_mode</span>
+              <input type="checkbox" id="cfgTextMode">
+            </label>
+            <p class="form-hint">需要生成画面内的文字时开启</p>
+          </div>
+        </div>
+
+        <div class="rt-panel">
+          <h3 class="rt-panel-title">种子 seed</h3>
+          <div class="form-group">
+            <label class="rt-switch-row">
+              <span>指定 seed（保持风格一致）</span>
+              <input type="checkbox" id="cfgUseSeed" onchange="toggleSeedInput()">
+            </label>
+          </div>
+          <div class="form-group">
+            <input type="number" id="cfgSeed" class="form-input form-input-sm" value="0" min="0" max="2147483647" disabled>
+            <p class="form-hint">0 = 每次随机；相同 seed 可复现相近风格</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- 主区 -->
+      <section class="ig-canvas">
+        <!-- 输入区 -->
+        <div class="ig-input-card">
+          <div class="form-group">
+            <label>提示词 prompt <span class="required">*</span></label>
+            <textarea id="prompt" class="form-input" rows="3" maxlength="512" placeholder="用中文描述想要生成的画面，如：一只在星空下散步的柴犬，电影感，温暖色调..."></textarea>
+            <div class="ig-prompt-meta">
+              <span id="promptCount">0</span>/512
+            </div>
+          </div>
+          <details class="ig-advanced">
+            <summary>高级：负面提示词</summary>
+            <textarea id="negativePrompt" class="form-input" rows="2" maxlength="512" placeholder="不希望出现的元素，如：低质量，模糊，多手指..."></textarea>
+          </details>
+          <div class="ig-actions">
+            <button class="btn btn-ghost btn-sm" onclick="clearGallery()">清空画廊</button>
+            <button class="btn btn-primary" id="generateBtn" onclick="generate()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                <path d="M20 3v4"/><path d="M22 5h-4"/>
+              </svg>
+              生成图片
+            </button>
+          </div>
+        </div>
+
+        <!-- 画廊 -->
+        <div class="ig-gallery-wrap">
+          <div class="ig-gallery-header">
+            <h3>生成结果</h3>
+            <span class="ig-gallery-count" id="galleryCount">0 张</span>
+          </div>
+          <div class="ig-gallery" id="gallery">
+            <div class="ig-empty">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>输入提示词，点击生成</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 大图查看 -->
+  <div id="imageViewer" class="vs-viewer" style="display:none;" onclick="closeViewer()">
+    <img id="viewerImg" alt="">
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" style="display:none;"></div>
+
+  <script src="/js/image.js"></script>
+</body>
+</html>

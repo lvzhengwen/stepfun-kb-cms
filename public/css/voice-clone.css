@@ -1,0 +1,370 @@
+/* ===== 音色复刻独立页面 ===== */
+
+.vc-main {
+  display: flex;
+  gap: 20px;
+  padding: 20px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+.vc-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vc-canvas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* 步骤 section */
+.vc-section {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.vc-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.vc-section-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.vc-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 1. 音频源两栏 */
+.vc-source-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.vc-source-card {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.vc-source-card .vd-upload-zone {
+  border: none;
+  background: var(--gray-50);
+  border-radius: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.vc-source-card .vd-upload-zone.dragover {
+  background: var(--primary-light);
+}
+
+/* 录音区 */
+.vc-record-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--gray-50);
+  height: 100%;
+}
+
+.vc-record-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+  background: #fff;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.vc-record-btn:hover {
+  background: var(--primary-light);
+}
+
+.vc-record-btn.recording {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+  animation: vc-pulse 1.2s infinite;
+}
+
+.vc-record-hint {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.vc-record-timer {
+  margin-left: auto;
+  font-family: "Consolas", monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+@keyframes vc-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }
+  50% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); }
+}
+
+/* 2. 预览 */
+.vc-preview audio {
+  width: 100%;
+  outline: none;
+}
+
+.vc-preview-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+/* 3. 复刻按钮 */
+#cloneBtn {
+  width: 100%;
+}
+
+/* 4. 结果 */
+.vc-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vc-result-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vc-result-label {
+  font-size: 13px;
+  color: var(--gray-600);
+  font-weight: 500;
+  min-width: 64px;
+  flex-shrink: 0;
+}
+
+.vc-result .tts-clone-id {
+  flex: 1;
+}
+
+.vc-result-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.vc-result-actions .btn {
+  flex: 1;
+}
+
+/* 5. 音色库 */
+.vc-library-count {
+  font-size: 12px;
+  color: var(--gray-500);
+  background: var(--gray-100);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.vc-library {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vc-library-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--gray-400);
+  font-size: 13px;
+}
+
+.vc-lib-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+}
+
+.vc-lib-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.vc-lib-icon:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.vc-lib-icon.playing {
+  background: var(--primary);
+  color: #fff;
+  animation: vc-icon-pulse 1.2s infinite;
+}
+
+.vc-lib-icon.playing .vc-play-icon {
+  /* 播放中显示暂停图标（两条竖线） */
+}
+
+.vc-lib-icon.playing::before {
+  content: "";
+  display: none;
+}
+
+@keyframes vc-icon-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 91, 255, 0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(99, 91, 255, 0); }
+}
+
+.vc-lib-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.vc-lib-id {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  word-break: break-all;
+}
+
+.vc-lib-id:hover {
+  text-decoration: underline;
+}
+
+.vc-lib-meta {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.vc-lib-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.vc-lib-actions .btn {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+/* 提示列表 */
+.vc-tips {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.vc-tips li {
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--gray-600);
+  border-bottom: 1px dashed var(--gray-100);
+  position: relative;
+  padding-left: 16px;
+}
+
+.vc-tips li:last-child {
+  border-bottom: none;
+}
+
+.vc-tips li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.vc-tips b {
+  color: var(--gray-800);
+}
+
+/* 复用 toast 按钮的样式 */
+.tts-clone-id {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 13px;
+  background: var(--gray-100);
+  border: 1px dashed var(--gray-300);
+  border-radius: 4px;
+  padding: 8px 10px;
+  color: var(--primary);
+  cursor: pointer;
+  word-break: break-all;
+  user-select: all;
+}
+
+.tts-clone-id:hover {
+  background: var(--primary-light);
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .vc-main {
+    flex-direction: column;
+  }
+  .vc-sidebar {
+    width: 100%;
+  }
+  .vc-source-row {
+    grid-template-columns: 1fr;
+  }
+}

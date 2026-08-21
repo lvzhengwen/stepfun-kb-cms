@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音频合成 - StepFun 控制管理后台</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/realtime.css">
+  <link rel="stylesheet" href="/css/tts.css">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <div class="header-left">
+        <a href="https://platform.stepfun.com/docs/zh/welcome" target="_blank" class="logo" title="StepFun 文档中心">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          <span>StepFun控制管理后台</span>
+        </</a>
+        <nav class="nav-tabs">
+          <a href="/" class="nav-tab">知识库管理</a>
+          <a href="/realtime.html" class="nav-tab">实时语音对话</a>
+          <a href="/step-realtime.html" class="nav-tab">中转测试</a>
+          <a href="/vision.html" class="nav-tab">图片理解</a>
+          <a href="/image.html" class="nav-tab">图片生成</a>
+          <a href="/image-edit.html" class="nav-tab">图片编辑</a>
+          <a href="/video.html" class="nav-tab">视频理解</a>
+          <a href="/tts.html" class="nav-tab active">音频合成</a>
+          <a href="/voice-clone.html" class="nav-tab">音色复刻</a>
+        </nav>
+      </div>
+      <div class="header-right">
+        <span class="api-badge" id="apiStatus">检查中...</span>
+      </div>
+    </header>
+
+    <main class="tts-main">
+      <!-- 左侧配置 -->
+      <aside class="tts-sidebar">
+        <div class="rt-panel">
+          <h3 class="rt-panel-title">模型</h3>
+          <div class="form-group">
+            <select id="cfgModel" class="form-input form-input-sm">
+              <option value="step-tts-2">step-tts-2（推荐，情绪/风格最全）</option>
+              <option value="stepaudio-2.5-tts">stepaudio-2.5-tts</option>
+              <option value="step-tts-mini">step-tts-mini（仅基础情绪）</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rt-panel">
+          <h3 class="rt-panel-title">音色</h3>
+          <div class="form-group">
+            <select id="cfgVoice" class="form-input form-input-sm"></select>
+            <p class="form-hint" id="voiceHint"></p>
+          </div>
+        </div>
+
+        <div class="rt-panel">
+          <h3 class="rt-panel-title">情绪 & 风格</h3>
+          <div class="form-group">
+            <label>情绪 emotion</label>
+            <select id="cfgEmotion" class="form-input form-input-sm">
+              <option value="">（无）</option>
+              <option value="高兴">高兴</option>
+              <option value="非常高兴">非常高兴</option>
+              <option value="悲伤">悲伤</option>
+              <option value="生气">生气</option>
+              <option value="非常生气">非常生气</option>
+              <option value="撒娇">撒娇</option>
+              <option value="恐惧">恐惧</option>
+              <option value="惊讶">惊讶</option>
+              <option value="兴奋">兴奋</option>
+              <option value="钦佩">钦佩</option>
+              <option value="困惑">困惑</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>演绎风格 style</label>
+            <select id="cfgStyle" class="form-input form-input-sm">
+              <option value="">（无）</option>
+              <option value="慢速">慢速</option>
+              <option value="极慢">极慢</option>
+              <option value="快速">快速</option>
+              <option value="极快">极快</option>
+              <option value="冷漠">冷漠</option>
+              <option value="尴尬">尴尬</option>
+              <option value="沮丧">沮丧</option>
+              <option value="骄傲">骄傲（仅 step-tts-2）</option>
+              <option value="温柔">温柔（仅 step-tts-2）</option>
+              <option value="甜美">甜美（仅 step-tts-2）</option>
+              <option value="豪爽">豪爽（仅 step-tts-2）</option>
+              <option value="严肃">严肃（仅 step-tts-2）</option>
+              <option value="傲慢">傲慢（仅 step-tts-2）</option>
+              <option value="老年">老年（仅 step-tts-2）</option>
+              <option value="吼叫">吼叫（仅 step-tts-2）</option>
+              <option value="阴阳怪气">阴阳怪气（仅 step-tts-2）</option>
+              <option value="磕巴">磕巴（仅 step-tts-2）</option>
+            </select>
+            <p class="form-hint">演绎风格（第 19~28）仅 step-tts-2 支持</p>
+          </div>
+        </div>
+
+        <div class="rt-panel">
+          <h3 class="rt-panel-title">参数</h3>
+          <div class="form-group">
+            <label>音量 <span id="volumeVal">1.0</span></label>
+            <input type="range" id="cfgVolume" min="0.1" max="2.0" step="0.1" value="1.0">
+          </div>
+          <div class="form-group">
+            <label>语速 <span id="speedVal">1.0</span></label>
+            <input type="range" id="cfgSpeed" min="0.5" max="2.0" step="0.1" value="1.0">
+          </div>
+          <div class="form-group">
+            <label>输出格式</label>
+            <select id="cfgFormat" class="form-input form-input-sm">
+              <option value="mp3">mp3（默认）</option>
+              <option value="wav">wav（无损）</option>
+              <option value="flac">flac（无损压缩）</option>
+              <option value="opus">opus（高效压缩）</option>
+              <option value="pcm">pcm（原始）</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 音色库提示：链接到独立音色复刻页面 -->
+        <div class="rt-panel">
+          <h3 class="rt-panel-title">自定义音色</h3>
+          <p class="form-hint">需要在「音色复刻」页面录制/上传音频，生成音色 ID 后可在此使用。</p>
+          <button class="btn btn-ghost btn-sm" onclick="window.open('/voice-clone.html','_blank')" style="width:100%;margin-top:6px;">前往音色复刻 →</button>
+        </div>
+      </aside>
+
+      <!-- 主区 -->
+      <section class="tts-canvas">
+        <div class="tts-input-card">
+          <div class="form-group">
+            <label>合成文本（最多 4096 字符）</label>
+            <textarea id="textInput" class="form-input" rows="5" maxlength="4096" placeholder="输入要合成的文字，支持中文/英文/中英混合/日语..."></textarea>
+            <div class="ig-prompt-meta"><span id="textCount">0</span>/4096</div>
+          </div>
+          <div class="tts-actions">
+            <button class="btn btn-ghost btn-sm" onclick="clearAll()">清空</button>
+            <button class="btn btn-primary" id="synthBtn" onclick="synthesize()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+              </svg>
+              合成语音
+            </button>
+          </div>
+        </div>
+
+        <div class="tts-player-card" id="playerCard" style="display:none;">
+          <div class="tts-player-header">
+            <span class="tts-player-label">最新合成</span>
+            <div class="tts-player-actions">
+              <button class="btn btn-ghost btn-sm" onclick="downloadLatest()">下载</button>
+            </div>
+          </div>
+          <audio id="audioPlayer" controls preload="metadata" style="width:100%;"></audio>
+          <div class="tts-meta" id="audioMeta"></div>
+        </div>
+
+        <div class="ig-gallery-wrap" id="historyWrap" style="display:none;">
+          <div class="ig-gallery-header">
+            <h3>合成历史</h3>
+            <span class="ig-gallery-count" id="historyCount">0</span>
+          </div>
+          <div class="tts-history" id="history"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" style="display:none;"></div>
+
+  <script src="/js/tts.js"></script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+/* ===== 图片编辑页面 ===== */
+
+.ig-main {
+  align-items: flex-start;
+}
+
+.ie-canvas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  /* 容器级防溢出，防止任何子元素撑高整个页面 */
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 上传卡片 */
+.ie-upload-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+/* 编辑器：三列布局 */
+.ie-editor-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.ie-editor-row {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.ie-side-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 8px;
+}
+
+.ie-image-wrap {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  min-height: 200px;
+  max-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* 防止图片撑破容器 */
+  contain: layout paint;
+}
+
+.ie-image-wrap img {
+  display: block;
+  max-width: 100%;
+  max-height: 360px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.ie-result-empty {
+  color: var(--gray-400);
+  font-size: 13px;
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.ie-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ie-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ie-result-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ie-result-actions .btn {
+  flex: 1;
+}
+
+/* 历史区 */
+.ie-history {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ie-history-item {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--gray-50);
+  align-items: center;
+}
+
+.ie-history-prompt {
+  font-size: 13px;
+  color: var(--gray-700);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ie-history-img {
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: zoom-in;
+  border: 1px solid var(--gray-200);
+}
+
+.ie-history-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.ie-history-actions .btn {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .ie-editor-row {
+    grid-template-columns: 1fr;
+  }
+}

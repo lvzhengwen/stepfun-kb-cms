@@ -1,0 +1,189 @@
+/* ===== 音频合成页面 ===== */
+
+.tts-main {
+  display: flex;
+  gap: 20px;
+  padding: 20px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+.tts-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tts-canvas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 输入卡片 */
+.tts-input-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.tts-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* 滑块 */
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--primary);
+}
+
+/* 播放器卡片 */
+.tts-player-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.tts-player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.tts-player-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.tts-player-actions {
+  display: flex;
+  gap: 8px;
+}
+
+audio {
+  outline: none;
+}
+
+.tts-meta {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--gray-500);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* 历史 */
+.tts-history {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tts-history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+}
+
+.tts-history-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--gray-700);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tts-history-audio {
+  height: 32px;
+  width: 240px;
+}
+
+.tts-history-meta {
+  font-size: 11px;
+  color: var(--gray-500);
+  white-space: nowrap;
+}
+
+.tts-history-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.tts-history-actions .btn {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+/* 音色复刻 */
+.tts-clone-id {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 12px;
+  background: var(--gray-100);
+  border: 1px dashed var(--gray-300);
+  border-radius: 4px;
+  padding: 6px 8px;
+  color: var(--primary);
+  cursor: pointer;
+  word-break: break-all;
+  user-select: all;
+}
+
+.tts-clone-id:hover {
+  background: var(--primary-light);
+}
+
+/* 录音 */
+.tts-record-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tts-record-btn.recording {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+  animation: rt-pulse 1.2s infinite;
+}
+
+.tts-record-timer {
+  font-family: "Consolas", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--danger);
+  min-width: 44px;
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .tts-main {
+    flex-direction: column;
+  }
+  .tts-sidebar {
+    width: 100%;
+  }
+  .tts-history-item {
+    flex-wrap: wrap;
+  }
+}
