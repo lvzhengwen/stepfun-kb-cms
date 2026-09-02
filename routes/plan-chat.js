@@ -1,8 +1,12 @@
 /**
- * Step Plan - 聊天对话（OpenAI 兼容 Chat Completions）
+ * StepFun 聊天对话（OpenAI 兼容 Chat Completions）
  *
- * 端点（外部）: https://api.stepfun.com/step_plan/v1/chat/completions
- * 参考: https://platform.stepfun.com/docs/zh/step-plan/quick-start
+ * 端点（外部）: https://api.stepfun.com/v1/chat/completions
+ * 参考: https://platform.stepfun.com/docs/zh/api-reference/chat/chat
+ *
+ * 注：Step Plan 套餐（step_plan/v1）是独立付费订阅，未订阅会返回
+ * "you have no active step plan subscription"。这里直接使用与 RAG
+ * 聊天（routes/chat.js）同一个 /v1 标准端点，模型、协议完全一致。
  *
  * 路由：
  *   POST /api/plan-chat              流式/非流式对话（SSE 透传）
@@ -15,16 +19,16 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const logger = require('../utils/logger');
 
-const STEP_PLAN_BASE = 'https://api.stepfun.com/step_plan/v1';
+const STEP_API_BASE = 'https://api.stepfun.com/v1';
 
-// 按官方文档推荐 + 我们已验证过的 StepPlan 套餐下模型清单
+// /v1 标准套餐下支持的文本/多模态通用模型
 const KNOWN_MODELS = [
-  { id: 'step-3.7-flash',        name: 'step-3.7-flash',        desc: '官方推荐验证模型，速度快、通用' },
-  { id: 'step-3.7-flash-think',  name: 'step-3.7-flash-think',  desc: '思考模式（建议开启 reasoning），复杂任务更稳' },
-  { id: 'step-1o',               name: 'step-1o',               desc: '多模态通用大模型（也可用于纯文本）' },
-  { id: 'step-1o-turbo',         name: 'step-1o-turbo',         desc: '1o 系列的快速版' },
-  { id: 'step-r1',               name: 'step-r1',               desc: '强推理模型，适合数学/代码/逻辑' },
-  { id: 'step-r1-mini',          name: 'step-r1-mini',          desc: '轻量推理模型' },
+  { id: 'step-3.7-flash',        name: 'step-3.7-flash',        desc: '推荐默认，速度快/通用性强/支持多模态' },
+  { id: 'step-3.7-flash-think',  name: 'step-3.7-flash-think',  desc: '思考模式，复杂推理任务表现更稳' },
+  { id: 'step-1o',               name: 'step-1o',               desc: '多模态通用大模型，也可纯文本对话' },
+  { id: 'step-1o-turbo',         name: 'step-1o-turbo',         desc: '1o 系列快速版' },
+  { id: 'step-r1',               name: 'step-r1',               desc: '强推理：数学/代码/逻辑任务' },
+  { id: 'step-r1-mini',          name: 'step-r1-mini',          desc: '轻量推理，速度更快' },
 ];
 
 function getApiKey() {
@@ -35,7 +39,7 @@ function getApiKey() {
 
 /** GET /api/plan-chat/models — 返回模型清单 */
 router.get('/models', (req, res) => {
-  res.json({ models: KNOWN_MODELS, base: STEP_PLAN_BASE });
+  res.json({ models: KNOWN_MODELS, base: STEP_API_BASE });
 });
 
 /** GET /api/plan-chat/health — 测试上游连通性（拉取模型列表，做最小权限验证） */
@@ -44,18 +48,18 @@ router.get('/health', async (req, res) => {
   if (!apiKey) return res.status(500).json({ ok: false, error: '未配置 STEP_API_KEY' });
 
   try {
-    const r = await fetch(`${STEP_PLAN_BASE}/models`, {
+    const r = await fetch(`${STEP_API_BASE}/models`, {
       headers: { Authorization: 'Bearer ' + apiKey },
       timeout: 8000,
     });
     const text = await r.text();
-    logger.info('PLAN-CHAT', `健康检查 ${r.status} upstream=${STEP_PLAN_BASE}/models`);
+    logger.info('PLAN-CHAT', `健康检查 ${r.status} upstream=${STEP_API_BASE}/models`);
     let body;
     try { body = JSON.parse(text); } catch { body = { raw: text.slice(0, 200) }; }
-    res.json({ ok: r.ok, upstream_status: r.status, base: STEP_PLAN_BASE, upstream_body_preview: body });
+    res.json({ ok: r.ok, upstream_status: r.status, base: STEP_API_BASE, upstream_body_preview: body });
   } catch (err) {
     logger.error('PLAN-CHAT', `健康检查失败: ${err.message}`);
-    res.status(500).json({ ok: false, error: err.message, base: STEP_PLAN_BASE });
+    res.status(500).json({ ok: false, error: err.message, base: STEP_API_BASE });
   }
 });
 
@@ -115,7 +119,7 @@ router.post('/', async (req, res) => {
   if (Number.isFinite(max_tokens) && max_tokens > 0) body.max_tokens = max_tokens;
   if (Number.isFinite(top_p) && top_p > 0) body.top_p = top_p;
 
-  const upstreamUrl = `${STEP_PLAN_BASE}/chat/completions`;
+  const upstreamUrl = `${STEP_API_BASE}/chat/completions`;
   logger.info('PLAN-CHAT', `转发到 ${upstreamUrl}`, { model, stream, has_system: body.messages[0]?.role === 'system' });
 
   try {
