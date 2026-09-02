@@ -29,6 +29,7 @@
           <a href="/video.html" class="nav-tab">视频理解</a>
           <a href="/tts.html" class="nav-tab">音频合成</a>
           <a href="/voice-clone.html" class="nav-tab">音色复刻</a>
+          <a href="/chat.html" class="nav-tab">聊天对话</a>
         </nav>
       </div>
       <div class="header-right">
@@ -49,6 +50,15 @@
           </div>
 
           <div class="form-group">
+            <label>场景（System Prompt）</label>
+            <select id="cfgScenario" class="form-input form-input-sm">
+              <option value="smart-home">智能家居助手（smart-home）</option>
+              <option value="labubu">泡泡玛特·拉布布（labubu）</option>
+            </select>
+            <p class="form-hint">连接时通过 ?scenario=xxx 指定，未命中自动回退默认场景</p>
+          </div>
+
+          <div class="form-group">
             <label>模型</label>
             <select id="cfgModel" class="form-input form-input-sm">
               <option value="stepaudio-2.5-realtime">stepaudio-2.5-realtime（推荐）</option>
@@ -62,8 +72,8 @@
           <div class="form-group" style="background:#e8f5e9;padding:10px;border-radius:8px;border:1px solid #a5d6a7;">
             <p style="margin:0;font-size:13px;color:#2e7d32;">
               模型 / 音色 / System Prompt / <strong>天气</strong> / <strong>网络搜索</strong> / <strong>知识库</strong> / <strong>记忆</strong>
-              均由服务端 <code>product-config.json</code> 统一管理，<strong>本页配置项不生效</strong>。
-              只需填对上方「中转地址」即可测试。
+              均由服务端 <code>product-config.json</code> 统一管理。
+              「场景」下拉框通过 <code>?scenario=xxx</code> 切换服务端预设的 System Prompt，模型 / 音色等其余项本页不生效。
             </p>
           </div>
 

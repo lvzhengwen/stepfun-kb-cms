@@ -18,6 +18,7 @@ const visionRoutes = require('./routes/vision');
 const imageRoutes = require('./routes/image');
 const videoRoutes = require('./routes/video');
 const ttsRoutes = require('./routes/tts');
+const planChatRoutes = require('./routes/plan-chat');
 const { setupRealtimeProxy } = require('./routes/realtime');
 
 const app = express();
@@ -41,6 +42,7 @@ app.use('/api/vision', visionRoutes);
 app.use('/api/image', imageRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/tts', ttsRoutes);
+app.use('/api/plan-chat', planChatRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

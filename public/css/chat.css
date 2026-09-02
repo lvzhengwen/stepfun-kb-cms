@@ -1,0 +1,103 @@
+/* ===== StepFun 聊天对话 ===== */
+
+/* 复用 realtime.css 的 .rt-* 样式；本页只补少量差异样式 */
+
+/* 长文本框 */
+.rt-textarea-tall {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* 预设行（一行内的 select + 两个 button） */
+.rt-preset-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.rt-preset-row select {
+  flex: 1;
+}
+
+/* 行内小按钮（用于 system prompt 区域） */
+.rt-inline-btn {
+  padding: 2px 8px;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* system prompt 区域提示行：高亮"未保存"/"已保存"状态 */
+#cfgSystemBadge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--warning-light, #fffbeb);
+  color: var(--warning, #d97706);
+  margin-right: 6px;
+}
+#cfgSystemBadge.saved {
+  background: var(--success-light, #f0fdf4);
+  color: var(--success, #16a34a);
+}
+
+/* 聊天输入框自动换行 */
+.chat-input {
+  resize: vertical;
+  min-height: 56px;
+  max-height: 200px;
+  line-height: 1.5;
+}
+
+/* 状态行的"当前模型"展示 */
+.rt-statusbar .rt-state-dot {
+  margin-right: 8px;
+}
+
+/* 模型列表的超链接模板选择器 */
+.form-hint a {
+  color: var(--primary, #4f46e5);
+  text-decoration: none;
+  margin: 0 4px;
+  cursor: pointer;
+}
+.form-hint a:hover {
+  text-decoration: underline;
+}
+
+/* 让 Assistant 消息的代码块更明显 */
+.rt-msg pre {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 6px 0;
+}
+.rt-msg pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+.rt-msg code {
+  background: var(--gray-100, #f3f4f6);
+  color: #be185d;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 90%;
+}
+
+/* 流式输出的光标动画 */
+.rt-msg.streaming .md-content::after {
+  content: '▍';
+  display: inline-block;
+  color: var(--primary, #4f46e5);
+  animation: caretBlink 1s steps(1) infinite;
+  margin-left: 2px;
+}
+@keyframes caretBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}

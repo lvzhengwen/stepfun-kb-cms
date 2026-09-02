@@ -225,9 +225,14 @@ function connect() {
   // 对接 WebSocket 中转代理（服务端 product-config.json 统一管理配置）
   // 中转地址可在页面配置，默认本地，可切到服务器
   // 自动带 userId — 用于记忆功能，无感知
+  // 带 scenario — 场景选择，服务端按场景加载不同 System Prompt
   const wsBase = (document.getElementById('cfgWsUrl')?.value || '').trim() || 'ws://127.0.0.1:8080';
   const userId = getUserOrCreateId();
-  const wsUrl = wsBase + (wsBase.includes('?') ? '&' : '?') + 'userId=' + encodeURIComponent(userId);
+  const scenario = (document.getElementById('cfgScenario')?.value || '').trim();
+  const params = new URLSearchParams();
+  params.set('userId', userId);
+  if (scenario) params.set('scenario', scenario);
+  const wsUrl = wsBase + (wsBase.includes('?') ? '&' : '?') + params.toString();
   ws = new WebSocket(wsUrl);
 
   ws.onopen = () => {
